@@ -45,48 +45,112 @@ validate_mtu() {
     fi
 }
 
-function setup_iran_server() {
-    echo "🇮🇷 CONFIGURING IRAN SERVER"
-    echo "========================================="
+function setup_tunnel() {
+    echo "🛠 TUNNEL SETUP"
+    echo "==============================="
+    echo "Which server are you configuring?"
+    echo
+    echo "1) 🇮🇷 Iran Server (Inside)"
+    echo "2) 🌍 Outside Server (Foreign)"
+    echo "==============================="
+    echo
+    
+    while true; do
+        read -p "Choose server type [1 or 2]: " server_type
+        if [[ "$server_type" == "1" || "$server_type" == "2" ]]; then
+            break
+        else
+            echo "❌ Please choose 1 or 2"
+        fi
+    done
+    
+    echo
     echo "📥 Please enter the required information:"
     
-    # Get and validate IP addresses
-    while true; do
-        read -p "🌐 Iran server IPv4 address: " IRAN_IP
-        if validate_ipv4 "$IRAN_IP"; then
-            break
-        else
-            echo "❌ Invalid IPv4 address. Example: 192.168.1.1"
-        fi
-    done
+    if [ "$server_type" == "1" ]; then
+        echo "🇮🇷 Configuring Iran Server..."
+        echo "=================================="
+        
+        # Iran server configuration
+        while true; do
+            read -p "🌐 This Iran server IPv4 address: " local_ip
+            if validate_ipv4 "$local_ip"; then
+                break
+            else
+                echo "❌ Invalid IPv4 address. Example: 192.168.1.1"
+            fi
+        done
+        
+        while true; do
+            read -p "🌐 Outside server IPv4 address: " remote_ip
+            if validate_ipv4 "$remote_ip"; then
+                break
+            else
+                echo "❌ Invalid IPv4 address. Example: 5.6.7.8"
+            fi
+        done
+        
+        while true; do
+            read -p "🧭 This Iran server IPv6 address (e.g. fd00::2): " local_ipv6
+            if validate_ipv6 "$local_ipv6"; then
+                break
+            else
+                echo "❌ Invalid IPv6 address. Example: fd00::2"
+            fi
+        done
+        
+        while true; do
+            read -p "🧭 Outside server IPv6 address (e.g. fd00::1): " remote_ipv6
+            if validate_ipv6 "$remote_ipv6"; then
+                break
+            else
+                echo "❌ Invalid IPv6 address. Example: fd00::1"
+            fi
+        done
+        
+    else
+        echo "🌍 Configuring Outside Server..."
+        echo "=================================="
+        
+        # Outside server configuration
+        while true; do
+            read -p "🌐 This outside server IPv4 address: " local_ip
+            if validate_ipv4 "$local_ip"; then
+                break
+            else
+                echo "❌ Invalid IPv4 address. Example: 5.6.7.8"
+            fi
+        done
+        
+        while true; do
+            read -p "🌐 Iran server IPv4 address: " remote_ip
+            if validate_ipv4 "$remote_ip"; then
+                break
+            else
+                echo "❌ Invalid IPv4 address. Example: 192.168.1.1"
+            fi
+        done
+        
+        while true; do
+            read -p "🧭 This outside server IPv6 address (e.g. fd00::1): " local_ipv6
+            if validate_ipv6 "$local_ipv6"; then
+                break
+            else
+                echo "❌ Invalid IPv6 address. Example: fd00::1"
+            fi
+        done
+        
+        while true; do
+            read -p "🧭 Iran server IPv6 address (e.g. fd00::2): " remote_ipv6
+            if validate_ipv6 "$remote_ipv6"; then
+                break
+            else
+                echo "❌ Invalid IPv6 address. Example: fd00::2"
+            fi
+        done
+    fi
     
-    while true; do
-        read -p "🌐 Outside server IPv4 address: " OUTSIDE_IP
-        if validate_ipv4 "$OUTSIDE_IP"; then
-            break
-        else
-            echo "❌ Invalid IPv4 address. Example: 5.6.7.8"
-        fi
-    done
-    
-    while true; do
-        read -p "🧭 Iran server IPv6 address (e.g. fd00::2): " IRAN_IPV6
-        if validate_ipv6 "$IRAN_IPV6"; then
-            break
-        else
-            echo "❌ Invalid IPv6 address. Example: fd00::2"
-        fi
-    done
-    
-    while true; do
-        read -p "🧭 Outside server IPv6 address (e.g. fd00::1): " OUTSIDE_IPV6
-        if validate_ipv6 "$OUTSIDE_IPV6"; then
-            break
-        else
-            echo "❌ Invalid IPv6 address. Example: fd00::1"
-        fi
-    done
-    
+    # Common MTU setting
     while true; do
         read -p "🔧 MTU value (recommended: 1480): " MTU
         if validate_mtu "$MTU"; then
@@ -95,74 +159,6 @@ function setup_iran_server() {
             echo "❌ MTU value must be between 576 and 9000"
         fi
     done
-    
-    echo "📍 Configuring Iran server..."
-    
-    local_ip="$IRAN_IP"
-    remote_ip="$OUTSIDE_IP"
-    local_ipv6="$IRAN_IPV6"
-    remote_ipv6="$OUTSIDE_IPV6"
-    
-    create_tunnel_config
-}
-
-function setup_outside_server() {
-    echo "🌍 CONFIGURING OUTSIDE SERVER"
-    echo "========================================="
-    echo "📥 Please enter the required information:"
-    
-    # Get and validate IP addresses
-    while true; do
-        read -p "🌐 Outside server IPv4 address: " OUTSIDE_IP
-        if validate_ipv4 "$OUTSIDE_IP"; then
-            break
-        else
-            echo "❌ Invalid IPv4 address. Example: 5.6.7.8"
-        fi
-    done
-    
-    while true; do
-        read -p "🌐 Iran server IPv4 address: " IRAN_IP
-        if validate_ipv4 "$IRAN_IP"; then
-            break
-        else
-            echo "❌ Invalid IPv4 address. Example: 192.168.1.1"
-        fi
-    done
-    
-    while true; do
-        read -p "🧭 Outside server IPv6 address (e.g. fd00::1): " OUTSIDE_IPV6
-        if validate_ipv6 "$OUTSIDE_IPV6"; then
-            break
-        else
-            echo "❌ Invalid IPv6 address. Example: fd00::1"
-        fi
-    done
-    
-    while true; do
-        read -p "🧭 Iran server IPv6 address (e.g. fd00::2): " IRAN_IPV6
-        if validate_ipv6 "$IRAN_IPV6"; then
-            break
-        else
-            echo "❌ Invalid IPv6 address. Example: fd00::2"
-        fi
-    done
-    
-    while true; do
-        read -p "🔧 MTU value (recommended: 1480): " MTU
-        if validate_mtu "$MTU"; then
-            break
-        else
-            echo "❌ MTU value must be between 576 and 9000"
-        fi
-    done
-    
-    echo "📍 Configuring outside server..."
-    
-    local_ip="$OUTSIDE_IP"
-    remote_ip="$IRAN_IP"
-    local_ipv6="$OUTSIDE_IPV6"
-    remote_ipv6="$IRAN_IPV6"
     
     create_tunnel_config
 }
@@ -379,35 +375,7 @@ function status_tunnel() {
     journalctl -u systemd-networkd --no-pager -n 5 2>/dev/null || echo "No logs available"
 }
 
-function setup_menu() {
-    clear
-    echo "==============================="
-    echo " 🛠  TUNNEL SETUP"
-    echo "==============================="
-    echo "Which server are you configuring?"
-    echo
-    echo "1) 🇮🇷 Iran Server (Inside)"
-    echo "2) 🌍 Outside Server (Foreign)"
-    echo "3) 🔙 Back to Main Menu"
-    echo "==============================="
-    echo
-    read -p "Choose an option [1-3]: " setup_choice
-    
-    case $setup_choice in
-        1)
-            setup_iran_server
-            ;;
-        2)
-            setup_outside_server
-            ;;
-        3)
-            return
-            ;;
-        *)
-            echo "❌ Invalid option. Please choose a number between 1-3"
-            ;;
-    esac
-}
+
 
 function main_menu() {
     clear
@@ -426,7 +394,7 @@ function main_menu() {
     
     case $choice in
         1)
-            setup_menu
+            setup_tunnel
             ;;
         2)
             remove_tunnel
