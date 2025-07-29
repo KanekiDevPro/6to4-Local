@@ -24,24 +24,10 @@ A simple and interactive Bash script to **setup**, **remove**, and **monitor** a
 
 ---
 
-## Usage
-
-1. **Download the script:**
+## Installation
 
    ```bash
-   wget https://your-repo-url/ipv6_tunnel_manager.sh
-   ```
-
-2. **Make it executable:**
-
-   ```bash
-   chmod +x ipv6_tunnel_manager.sh
-   ```
-
-3. **Run the script with sudo:**
-
-   ```bash
-   sudo ./ipv6_tunnel_manager.sh
+   bash <(curl -fsSL https://raw.githubusercontent.com/KanekiDevPro/Auto-Restart/main/beta.sh) --install
    ```
 
 4. **Follow the interactive menu:**
