@@ -27,7 +27,7 @@ A simple and interactive Bash script to **setup**, **remove**, and **monitor** a
 ## Installation
 
    ```bash
-   bash <(curl -fsSL https://raw.githubusercontent.com/KanekiDevPro/Auto-Restart/main/beta.sh) --install
+   bash <(curl -fsSL https://raw.githubusercontent.com/KanekiDevPro/6to4-Local/main/install.sh) --install
    ```
 
 4. **Follow the interactive menu:**
