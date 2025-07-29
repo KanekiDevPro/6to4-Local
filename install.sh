@@ -13,6 +13,27 @@ function setup_tunnel() {
     read -p "🧭 Local IPv6 address for internal server (e.g. fd00::2): " ipv6IRAN
     read -p "🔧 MTU value (e.g. 1480 or 1500): " MTU
 
+    echo
+    echo "🛑 Which side are you configuring?"
+    echo "1) Iran server"
+    echo "2) Outside server"
+    read -p "Choose [1 or 2]: " side
+
+    if [ "$side" == "1" ]; then
+        local_ip="$IRAN"
+        remote_ip="$KHAREJLOCAL"
+        local_ipv6="$ipv6IRAN"
+        remote_ipv6="$ipv6KHAREJ"
+    elif [ "$side" == "2" ]; then
+        local_ip="$KHAREJLOCAL"
+        remote_ip="$IRAN"
+        local_ipv6="$ipv6KHAREJ"
+        remote_ipv6="$ipv6IRAN"
+    else
+        echo "Invalid choice. Exiting."
+        exit 1
+    fi
+
     echo "🔧 Installing required packages..."
     apt update -y
     apt install -y iproute2 netplan.io
@@ -24,10 +45,10 @@ network:
   tunnels:
     $INTERFACE:
       mode: sit
-      local: $KHAREJLOCAL
-      remote: $IRAN
+      local: $local_ip
+      remote: $remote_ip
       addresses:
-        - $ipv6KHAREJ/64
+        - $local_ipv6/64
       mtu: $MTU
 EOF
 
@@ -40,8 +61,8 @@ EOF
 Name=$INTERFACE
 
 [Network]
-Address=$ipv6KHAREJ/64
-Gateway=$ipv6IRAN
+Address=$local_ipv6/64
+Gateway=$remote_ipv6
 EOF
 
     echo "🔄 Restarting systemd-networkd..."
