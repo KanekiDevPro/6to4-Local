@@ -1,4 +1,4 @@
-# IPv6 SIT Tunnel Manager
+# 6to4 SIT Tunnel Manager
 
 A simple and interactive Bash script to **setup**, **remove**, and **monitor** an IPv6 SIT tunnel on Debian/Ubuntu-based servers using Netplan and systemd-networkd.
 
